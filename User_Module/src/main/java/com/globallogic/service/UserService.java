@@ -6,7 +6,7 @@ import com.globallogic.exceptions.UserNotFoundException;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService  {
      User addUser(User user) throws UserAlreadyExistException;
 
      List<User> getAllUser();
@@ -17,5 +17,5 @@ public interface UserService {
 
      User deleteUserById(int userId) throws UserAlreadyExistException, UserNotFoundException;
 
-     User findByemailAndPassword(String email,String password);
+
 }

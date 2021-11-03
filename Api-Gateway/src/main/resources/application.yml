@@ -1,0 +1,26 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: USER-SERVICE
+          uri: http://localhost:9001/
+          predicates:
+            - Path=/users/**
+        - id: FAVORITE-CITIES
+          uri: http://localhost:9002/
+          predicates:
+            - Path=/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:9091/eureka/
+  instance:
+    hostname: localhost

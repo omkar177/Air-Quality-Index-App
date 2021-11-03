@@ -8,6 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.globallogic.*")
 public class UserModuleApplication {
     public static void main(String[] args) {
+
         SpringApplication.run(UserModuleApplication.class);
     }
 }

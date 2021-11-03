@@ -1,28 +1,27 @@
 package com.globallogic.controller;
 
 
-
+import com.globallogic.entity.FavoriteCities;
 import com.globallogic.entity.airindex.CityAndAirIndex;
 import com.globallogic.entity.cities.CityList;
 import com.globallogic.entity.cities.DataCities;
 import com.globallogic.entity.states.StateList;
+import com.globallogic.service.FavoriteCityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
-@RequestMapping("/favcity")
-@Slf4j
+@RequestMapping("/")
 public class FavCityController {
 
     @Value("${api.key}")
@@ -31,65 +30,71 @@ public class FavCityController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @GetMapping("/states/{country}")
-    public StateList getStates(@PathVariable String country){
+    @Autowired
+    private FavoriteCityService favoriteCityService;
 
-        StateList data= restTemplate.getForObject(
-                "http://api.airvisual.com/v2/states?country="+country+"&key="+apikey, StateList.class);
+//    String apiUrl1="http://api.airvisual.com/v2/states?country=";
+
+    @GetMapping("states")
+    public StateList getStates(@QueryParam("country") String country) {
+        StateList data = restTemplate.getForObject(
+                "http://api.airvisual.com/v2/states?country=" + country + "&key=" + apikey, StateList.class);
         return data;
-
     }
 
-    @GetMapping("/cities/{state},{country}")
-    public CityList getCities(@PathVariable String state, @PathVariable String country){
+    @GetMapping("cities")
+    public CityList getCities(@QueryParam("state") String state, @QueryParam("country") String country) {
 
-        CityList cities=restTemplate.getForObject(
-                "http://api.airvisual.com/v2/cities?state="+state+"&country="+country+"&key="+apikey, CityList.class);
+        CityList cities = restTemplate.getForObject(
+                "http://api.airvisual.com/v2/cities?state=" + state + "&country=" + country + "&key=" + apikey, CityList.class);
         return cities;
 
     }
 
-    @GetMapping("/airqs/{city},{state},{country}")
-    public CityAndAirIndex getCities(@PathVariable String city, @PathVariable String state, @PathVariable String country)
-    throws InvocationTargetException{
+    @GetMapping("airindex")
+    public ResponseEntity<?> getAirIndexForCity(@QueryParam("city") String city, @QueryParam("state") String state, @QueryParam("country") String country) throws Exception {
 
-        CityAndAirIndex cityAndAirIndex = restTemplate.getForObject(
-                "http://api.airvisual.com/v2/city?city="+city+"&state="+state+"&country="+country+"&key="+apikey
-                ,CityAndAirIndex.class);
-        return  cityAndAirIndex;
-
-    }
-
-    @GetMapping("/airqs/{state},{country}")
-    public List<CityAndAirIndex> getAirIndexOfAllCities(@PathVariable String state, @PathVariable String country) throws Exception {
-        //List for adding cities
-        List<DataCities> allCities = new ArrayList<>();
-        //Handling exception for api server issues
-        try {
-            CityList cities = restTemplate.getForObject(
-                    "http://api.airvisual.com/v2/cities?state=" + state + "&country=" + country + "&key=" + apikey, CityList.class);
-
-            allCities.addAll(cities.getData());
-        }
-        catch (Exception e){
-            throw new Exception();
-        }
-        //List that contains city and air index
         List<CityAndAirIndex> list = new ArrayList<>();
-        //incase of an empty list the flow will be stopped
-        if(allCities.isEmpty() || allCities==null){
-            System.out.println("No Cities Found");
-        }
-        else {
-            for (DataCities cityData : allCities) {
+        try {
+            if (city == null || city.isEmpty()) {
+                List<DataCities> allCities = new ArrayList<>();
+                CityList cities = restTemplate.getForObject(
+                        "http://api.airvisual.com/v2/cities?state=" + state + "&country=" + country + "&key=" + apikey, CityList.class);
+
+                allCities.addAll(cities.getData());
+
+                for (DataCities cityData : allCities) {
+                    CityAndAirIndex cityAndAirIndex = restTemplate.getForObject(
+                            "http://api.airvisual.com/v2/city?city=" + cityData.getCity() + "&state=" + state + "&country=" + country + "&key=" + apikey
+                            , CityAndAirIndex.class);
+                    list.add(cityAndAirIndex);
+                }
+            } else {
                 CityAndAirIndex cityAndAirIndex = restTemplate.getForObject(
-                        "http://api.airvisual.com/v2/city?city=" + cityData.getCity() + "&state=" + state + "&country=" + country + "&key=" + apikey
+                        "http://api.airvisual.com/v2/city?city=" + city + "&state=" + state + "&country=" + country + "&key=" + apikey
                         , CityAndAirIndex.class);
-                //All airIndex of city to list\
                 list.add(cityAndAirIndex);
             }
-
+        }catch (Exception e)
+        {
+           return new ResponseEntity<>("call_per_minute_limit_reached",HttpStatus.CONFLICT);
         }
-        return list;
+        return new ResponseEntity<>(list,HttpStatus.OK);
+    }
+
+    @PostMapping("addCity")
+    public ResponseEntity<?> addCityToFavaorite(@QueryParam("city") String city,@QueryParam("state") String state, @QueryParam("country") String country){
+
+        CityAndAirIndex cityAndAirIndex = restTemplate.getForObject(
+                "http://api.airvisual.com/v2/city?city=" + city + "&state=" + state + "&country=" + country + "&key=" + apikey
+                , CityAndAirIndex.class);
+
+        String newCity=cityAndAirIndex.getData().getCity();
+        int aquis=cityAndAirIndex.getData().getCurrent().getPollution().getAqius();
+        FavoriteCities newFavoriteCity= new FavoriteCities();
+        newFavoriteCity.setCity(newCity);
+        newFavoriteCity.setAqius(aquis);
+
+        return new ResponseEntity<>(newFavoriteCity,HttpStatus.CREATED);
     }
 }

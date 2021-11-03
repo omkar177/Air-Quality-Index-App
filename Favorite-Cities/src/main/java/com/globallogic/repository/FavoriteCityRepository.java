@@ -1,11 +1,9 @@
 package com.globallogic.repository;
 
-import com.globallogic.entity.User;
+import com.globallogic.entity.FavoriteCities;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
-    User findByemail(String email);
-
+public interface FavoriteCityRepository extends JpaRepository<FavoriteCities,Integer> {
 }

@@ -5,9 +5,9 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>User_Module</module>
-        <module>Favorite_Cities_Module</module>
         <module>Favorite-Cities</module>
         <module>Service-Registry</module>
+        <module>Api-Gateway</module>
     </modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>

@@ -56,24 +56,24 @@ public class UserServiceTest {
         when(userRepository.findById(100)).thenReturn(optionalEmployee);
         assertThrows(UserNotFoundException.class,()->{userServiceImpl.getUserById(100);});
     }
-    @Test
-    public void givenNewUserWhenSavedShouldReturnUser() throws UserAlreadyExistException {
-
-        Optional<User> optionalUser = Optional.empty();
-        when(userRepository.findById(1)).thenReturn(optionalUser);
-        User addedUser = userServiceImpl.addUser(user1);
-        verify(userRepository,times(1)).findById(1);
-        verify(userRepository,times(1)).save(user1);
-    }
-    @Test
-    public void givenDuplicateUserWhenSavedShouldThrowException() throws UserAlreadyExistException {
-
-        Optional<User> optionalEmployee = Optional.of(user1);
-        when(userRepository.findById(1)).thenReturn(optionalEmployee);
-        assertThrows(UserAlreadyExistException.class,()->{userServiceImpl.addUser(user1);});
-        verify(userRepository,times(1)).findById(1);
-        verify(userRepository,times(0)).save(user1);
-    }
+//    @Test
+//    public void givenNewUserWhenSavedShouldReturnUser() throws UserAlreadyExistException {
+//
+//        Optional<User> optionalUser = Optional.empty();
+//        when(userRepository.findById(1)).thenReturn(optionalUser);
+//        User addedUser = userServiceImpl.addUser(user1);
+//        verify(userRepository,times(1)).findById(1);
+//        verify(userRepository,times(1)).save(user1);
+//    }
+//    @Test
+//    public void givenDuplicateUserWhenSavedShouldThrowException() throws UserAlreadyExistException {
+//
+//        Optional<User> optionalEmployee = Optional.of(user1);
+//        when(userRepository.findById(1)).thenReturn(optionalEmployee);
+//        assertThrows(UserAlreadyExistException.class,()->{userServiceImpl.addUser(user1);});
+//        verify(userRepository,times(1)).findById(1);
+//        verify(userRepository,times(0)).save(user1);
+//    }
     @Test
     public void testAddUser(){
 
