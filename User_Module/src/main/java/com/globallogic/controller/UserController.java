@@ -38,7 +38,7 @@ public class UserController {
     private UserDetailsService jwtInMemoryUserDetailsService;
 
 
-    @PostMapping("/addUser")
+    @PostMapping(value = "/addUser")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         try {
             return new ResponseEntity<>(userDetailsService.addUser(user), HttpStatus.CREATED);
@@ -46,49 +46,25 @@ public class UserController {
             return new ResponseEntity("User Already Exist", HttpStatus.CONFLICT);
         }
     }
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest)
-            throws Exception {
 
-        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
-
-        final UserDetails userDetails = jwtInMemoryUserDetailsService
-                .loadUserByUsername(authenticationRequest.getEmail());
-
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new JwtResponse(token));
-    }
-
-        private void authenticate(String email, String password) throws Exception {
-            try {
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-            } catch (DisabledException e) {
-                throw new Exception("USER_DISABLED", e);
-            } catch (BadCredentialsException e) {
-                throw new Exception("INVALID_CREDENTIALS", e);
-            }
-        }
-
-
-    @GetMapping("/getAll")
+    @GetMapping(value = "/getAll")
     public ResponseEntity<List<User>> getAllUser(){
         List<User> userList=userDetailsService.getAllUser();
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
 
-    @DeleteMapping ("/delete/{id}")
+    @DeleteMapping (value = "/delete/{id}")
     public ResponseEntity<User> deleteUserById(@PathVariable("id") int userId) {
-    try {
-        return new ResponseEntity<>(userDetailsService.deleteUserById(userId), HttpStatus.OK);
-    }
-    catch (UserNotFoundException userNotFoundException){
-        return new ResponseEntity("User Not Found",HttpStatus.NOT_FOUND);
-    }
+        try {
+            return new ResponseEntity<>(userDetailsService.deleteUserById(userId), HttpStatus.OK);
+        }
+        catch (UserNotFoundException userNotFoundException){
+            return new ResponseEntity("User Not Found",HttpStatus.NOT_FOUND);
+        }
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update")
     public ResponseEntity<User> updateUser(@RequestBody User user){
         try {
             User updatedUser = userDetailsService.updateUser(user);
@@ -99,7 +75,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping(value = "/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") int id){
         try{
             return new ResponseEntity<>(userDetailsService.getUserById(id),HttpStatus.OK);
@@ -109,8 +85,36 @@ public class UserController {
         }
     }
 
-    @GetMapping("/home")
+    @PostMapping(value = "/login")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+
+            authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+
+            final UserDetails userDetails = jwtInMemoryUserDetailsService
+                    .loadUserByUsername(authenticationRequest.getEmail());
+
+            final String token = jwtTokenUtil.generateToken(userDetails);
+
+            JwtResponse jwtToken=new JwtResponse(token);
+
+            return new ResponseEntity(jwtToken,HttpStatus.OK);
+    }
+
+    private void authenticate(String email, String password) throws Exception {
+      try {
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            }
+      catch (DisabledException e) {
+                throw new Exception("USER_DISABLED", e);
+            }
+      catch (BadCredentialsException e) {
+                throw new Exception("INVALID_CREDENTIALS", e);
+            }
+    }
+
+
+    @GetMapping(value = "/home")
     public String home() {
-        return "Welcome to the Air Pollution ";
+        return "Welcome to the Air Pollution App";
     }
 }
