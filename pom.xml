@@ -8,6 +8,7 @@
         <module>Favorite-Cities</module>
         <module>Service-Registry</module>
         <module>Api-Gateway</module>
+        <module>UserFavCities</module>
     </modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>

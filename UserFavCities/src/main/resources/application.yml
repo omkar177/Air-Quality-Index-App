@@ -1,9 +1,9 @@
 server:
-  port: 9002
+  port: 9003
 
 spring:
   application:
-    name: FAVORITE-CITIES-SERVICE
+    name: FAVORITE-SERVICE
 
 eureka:
   client:

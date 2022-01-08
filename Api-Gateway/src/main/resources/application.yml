@@ -11,10 +11,14 @@ spring:
           uri: http://localhost:9001/
           predicates:
             - Path=/users/**
-        - id: FAVORITE-CITIES
+        - id: FAVORITE-CITIES-SERVICE
           uri: http://localhost:9002/
           predicates:
             - Path=/**
+        - id: FAVORITE-SERVICE
+          uri: http://localhost:9003/
+          predicates:
+            - Path=/favorite/**
 
 eureka:
   client:

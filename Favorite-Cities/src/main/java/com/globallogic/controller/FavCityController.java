@@ -94,7 +94,7 @@ public class FavCityController {
         FavoriteCities newFavoriteCity= new FavoriteCities();
         newFavoriteCity.setCity(newCity);
         newFavoriteCity.setAqius(aquis);
-
+        favoriteCityService.addNewCityToFavorite(newFavoriteCity);
         return new ResponseEntity<>(newFavoriteCity,HttpStatus.CREATED);
     }
 }
