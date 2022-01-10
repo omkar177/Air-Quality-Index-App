@@ -14,8 +14,10 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+
+            <maven.compiler.source>1.8</maven.compiler.source>
+            <maven.compiler.target>1.8</maven.compiler.target>
+
         <spring-cloud.version>2020.0.4</spring-cloud.version>
     </properties>
     <dependencies>
@@ -123,26 +125,21 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <finalName>user-login-module</finalName>
+                </configuration>
             </plugin>
 
             <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.35.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
                 <configuration>
-                    <imageName>Usermodule</imageName>
-                    <baseImage>java</baseImage>
-                    <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
-                    <!-- copy the service's jar file from target into the root directory of the image -->
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
+
+
         </plugins>
     </build>
 

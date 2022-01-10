@@ -1,3 +1,4 @@
 FROM openjdk:11
-COPY ./target/User_Module-0.0.1-SNAPSHOT.jar User_Module-0.0.1-SNAPSHOT.jar
-CMD ["java","-jar","User_Module-0.0.1-SNAPSHOT.jar"]
+ADD target/user-login-module.jar user-login-module.jar
+EXPOSE 9002
+ENTRYPOINT ["java", "-jar", "user-login-module.jar"]
