@@ -2,7 +2,7 @@ language: java
 jdk:
   - openjdk8
 
-script: ./mvnw clean install -DskipTests
+script: ./mvnw clean install
 
 before_install:
   - chmod +x mvnw
